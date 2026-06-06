@@ -1,0 +1,45 @@
+import { Types } from 'mongoose';
+
+import { BudgetModel } from './budget.model';
+import { CreateBudgetInput, UpdateBudgetInput } from './budget.types';
+
+/** All Mongoose access for the budgets collection. */
+export const budgetRepository = {
+  create(userId: string, input: CreateBudgetInput) {
+    return BudgetModel.create({
+      userId: new Types.ObjectId(userId),
+      ...input,
+    });
+  },
+
+  findByUser(userId: string) {
+    return BudgetModel.find({ userId: new Types.ObjectId(userId) }).sort({
+      category: 1,
+    });
+  },
+
+  findById(userId: string, id: string) {
+    if (!Types.ObjectId.isValid(id)) return null;
+    return BudgetModel.findOne({
+      _id: id,
+      userId: new Types.ObjectId(userId),
+    });
+  },
+
+  update(userId: string, id: string, input: UpdateBudgetInput) {
+    if (!Types.ObjectId.isValid(id)) return null;
+    return BudgetModel.findOneAndUpdate(
+      { _id: id, userId: new Types.ObjectId(userId) },
+      input,
+      { new: true },
+    );
+  },
+
+  delete(userId: string, id: string) {
+    if (!Types.ObjectId.isValid(id)) return null;
+    return BudgetModel.findOneAndDelete({
+      _id: id,
+      userId: new Types.ObjectId(userId),
+    });
+  },
+};
