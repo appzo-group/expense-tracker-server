@@ -5,11 +5,7 @@ import { logger } from '../config/logger';
 import { env } from '../config/env';
 import { ApiError } from '../http/ApiError';
 
-/**
- * Central error handler. Normalises known error shapes (ApiError, Mongoose
- * validation/cast, duplicate key) into the standard error envelope and hides
- * internals for unexpected errors.
- */
+
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   let statusCode = 500;
   let message = 'Something went wrong';
