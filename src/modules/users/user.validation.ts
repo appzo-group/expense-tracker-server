@@ -22,3 +22,10 @@ export const updateSettingsValidation = [
     .isBoolean()
     .withMessage('budgetAlerts must be a boolean'),
 ];
+
+export const deleteAccountValidation = [
+  body('password')
+    .isString()
+    .notEmpty()
+    .withMessage('Password is required to delete your account'),
+];

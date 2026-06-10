@@ -24,4 +24,9 @@ export const userController = {
     });
     ApiResponse.send(res, { data: user, message: 'Settings updated' });
   },
+
+  async deleteAccount(req: Request, res: Response) {
+    await userService.deleteAccount(requireUserId(req), req.body.password);
+    ApiResponse.send(res, { data: null, message: 'Account deleted' });
+  },
 };

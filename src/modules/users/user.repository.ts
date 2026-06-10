@@ -15,6 +15,16 @@ export const userRepository = {
     return UserModel.findById(id);
   },
 
+  /** Includes the password hash — for re-authentication (e.g. account deletion). */
+  findByIdWithPassword(id: string) {
+    return UserModel.findById(id).select('+password');
+  },
+
+  /** Soft-delete: marks the user as deleted rather than removing the record. */
+  deleteById(id: string) {
+    return UserModel.findByIdAndUpdate(id, { deletedAt: new Date() });
+  },
+
   findByEmail(email: string) {
     return UserModel.findOne({ email: email.toLowerCase() });
   },

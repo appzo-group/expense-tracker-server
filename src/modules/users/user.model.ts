@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 import { AppConstants } from '../../shared/constants/app';
+import { softDeletePlugin } from '../../shared/utils/softDelete.plugin';
 
 export interface UserDocument extends Document {
   name: string;
@@ -10,6 +11,7 @@ export interface UserDocument extends Document {
   notifications: { budgetAlerts: boolean };
   passwordResetToken: string | null;
   passwordResetExpires: Date | null;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,13 +19,13 @@ export interface UserDocument extends Document {
 const userSchema = new Schema<UserDocument>(
   {
     name: { type: String, required: true, trim: true },
+    // Uniqueness is enforced by a partial index below (only among non-deleted
+    // users) so an email can be reused after a soft-deleted account.
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     // Never returned by default; queries that need it use `.select('+password')`.
     password: { type: String, required: true, select: false },
@@ -49,6 +51,14 @@ const userSchema = new Schema<UserDocument>(
       },
     },
   },
+);
+
+userSchema.plugin(softDeletePlugin);
+
+// Email is unique only among active (non-deleted) users.
+userSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { deletedAt: null } },
 );
 
 export const UserModel = model<UserDocument>('User', userSchema);

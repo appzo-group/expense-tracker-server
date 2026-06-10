@@ -51,6 +51,11 @@ export const transactionService = {
     if (!doc) throw ApiError.notFound('Transaction not found');
   },
 
+  /** Deletes all of a user's transactions (used by account deletion). */
+  async deleteAllForUser(userId: string): Promise<void> {
+    await transactionRepository.deleteAllForUser(userId);
+  },
+
   async getById(userId: string, id: string): Promise<PublicTransaction> {
     const doc = await transactionRepository.findById(userId, id);
     if (!doc) throw ApiError.notFound('Transaction not found');

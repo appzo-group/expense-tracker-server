@@ -5,6 +5,7 @@ import { validate } from '../../core/middleware/validate.middleware';
 import { catchAsync } from '../../core/http/catchAsync';
 import { userController } from './user.controller';
 import {
+  deleteAccountValidation,
   updateProfileValidation,
   updateSettingsValidation,
 } from './user.validation';
@@ -25,6 +26,12 @@ router.patch(
   updateSettingsValidation,
   validate,
   catchAsync(userController.updateSettings),
+);
+router.delete(
+  '/profile',
+  deleteAccountValidation,
+  validate,
+  catchAsync(userController.deleteAccount),
 );
 
 export const userRouter = router;

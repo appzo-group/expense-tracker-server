@@ -37,6 +37,11 @@ export const budgetService = {
     if (!doc) throw ApiError.notFound('Budget not found');
   },
 
+  /** Deletes all of a user's budgets (used by account deletion). */
+  async deleteAllForUser(userId: string): Promise<void> {
+    await budgetRepository.deleteAllForUser(userId);
+  },
+
   async list(userId: string): Promise<PublicBudget[]> {
     const docs = await budgetRepository.findByUser(userId);
     return Promise.all(docs.map((doc) => this.withSpent(userId, doc)));

@@ -1,4 +1,8 @@
 import { ApiError } from '../../core/http/ApiError';
+import { password as passwordUtil } from '../../shared/utils/password';
+import { budgetService } from '../budgets';
+import { tokenService } from '../tokens';
+import { transactionService } from '../transactions';
 import { userRepository } from './user.repository';
 import { UserDocument } from './user.model';
 import {
@@ -36,7 +40,7 @@ export const userService = {
 
   async getProfile(userId: string): Promise<PublicUser> {
     const user = await userRepository.findById(userId);
-    if (!user) throw ApiError.notFound('User not found');
+    if (!user) throw ApiError.unauthorized('User not found');
     return this.toPublic(user);
   },
 
@@ -82,5 +86,26 @@ export const userService = {
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
     await user.save();
+  },
+
+  /**
+   * Permanently deletes the account after re-authenticating with the current
+   * password, then removes all associated data (transactions, budgets, refresh
+   * tokens) per the data-retention policy.
+   */
+  async deleteAccount(userId: string, plainPassword: string): Promise<void> {
+    const user = await userRepository.findByIdWithPassword(userId);
+    if (!user) throw ApiError.notFound('User not found');
+
+    const valid = await passwordUtil.compare(plainPassword, user.password);
+    if (!valid) throw ApiError.unauthorized('Incorrect password');
+
+    // Soft-delete all user-owned data and revoke sessions, then the user record.
+    await Promise.all([
+      transactionService.deleteAllForUser(userId),
+      budgetService.deleteAllForUser(userId),
+      tokenService.revokeAllForUser(userId),
+    ]);
+    await userRepository.deleteById(userId);
   },
 };

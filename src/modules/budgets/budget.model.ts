@@ -1,6 +1,7 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 import { BUDGET_PERIODS, BudgetPeriod } from '../../shared/constants';
+import { softDeletePlugin } from '../../shared/utils/softDelete.plugin';
 
 export interface BudgetDocument extends Document {
   userId: Types.ObjectId;
@@ -8,6 +9,7 @@ export interface BudgetDocument extends Document {
   limit: number;
   period: BudgetPeriod;
   startDate: Date;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,5 +42,7 @@ const budgetSchema = new Schema<BudgetDocument>(
 );
 
 budgetSchema.index({ userId: 1, category: 1 });
+
+budgetSchema.plugin(softDeletePlugin);
 
 export const BudgetModel = model<BudgetDocument>('Budget', budgetSchema);

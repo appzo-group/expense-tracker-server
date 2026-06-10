@@ -35,11 +35,20 @@ export const budgetRepository = {
     );
   },
 
+  /** Soft-delete: marks the budget as deleted rather than removing it. */
   delete(userId: string, id: string) {
     if (!Types.ObjectId.isValid(id)) return null;
-    return BudgetModel.findOneAndDelete({
-      _id: id,
-      userId: new Types.ObjectId(userId),
-    });
+    return BudgetModel.findOneAndUpdate(
+      { _id: id, userId: new Types.ObjectId(userId) },
+      { deletedAt: new Date() },
+    );
+  },
+
+  /** Soft-delete every budget for a user (account deletion). */
+  deleteAllForUser(userId: string) {
+    return BudgetModel.updateMany(
+      { userId: new Types.ObjectId(userId) },
+      { deletedAt: new Date() },
+    );
   },
 };

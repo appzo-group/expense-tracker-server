@@ -1,6 +1,7 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 import { TRANSACTION_TYPES, TransactionType } from '../../shared/constants';
+import { softDeletePlugin } from '../../shared/utils/softDelete.plugin';
 
 export interface TransactionDocument extends Document {
   userId: Types.ObjectId;
@@ -9,6 +10,7 @@ export interface TransactionDocument extends Document {
   category: string;
   note?: string;
   date: Date;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +51,8 @@ const transactionSchema = new Schema<TransactionDocument>(
 // Compound indexes for list/filter/analytics performance.
 transactionSchema.index({ userId: 1, date: -1 });
 transactionSchema.index({ userId: 1, type: 1, category: 1 });
+
+transactionSchema.plugin(softDeletePlugin);
 
 export const TransactionModel = model<TransactionDocument>(
   'Transaction',

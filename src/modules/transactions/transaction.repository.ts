@@ -41,6 +41,7 @@ export const transactionRepository = {
     return TransactionModel.findOneAndUpdate(filter, input, { new: true });
   },
 
+  /** Soft-delete: marks the transaction as deleted rather than removing it. */
   delete(userId: string, id: string, type?: TransactionType) {
     if (!Types.ObjectId.isValid(id)) return null;
     const filter: FilterQuery<TransactionDocument> = {
@@ -48,7 +49,15 @@ export const transactionRepository = {
       userId: new Types.ObjectId(userId),
     };
     if (type) filter.type = type;
-    return TransactionModel.findOneAndDelete(filter);
+    return TransactionModel.findOneAndUpdate(filter, { deletedAt: new Date() });
+  },
+
+  /** Soft-delete every transaction for a user (account deletion). */
+  deleteAllForUser(userId: string) {
+    return TransactionModel.updateMany(
+      { userId: new Types.ObjectId(userId) },
+      { deletedAt: new Date() },
+    );
   },
 
   async list(userId: string, query: ListTransactionsQuery, skip: number, limit: number) {
