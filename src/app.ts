@@ -9,7 +9,7 @@ import { apiRouter } from './routes';
 import { monitorApiRequest } from './core/config/logger';
 
 
-export function createApp(): Application {
+export default function createApp(): Application {
   const app = express();
 
   app.use(monitorApiRequest);

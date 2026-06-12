@@ -1,4 +1,4 @@
-import { createApp } from './app';
+import createApp from './app';
 import { connectDb } from './core/config/db';
 import { env } from './core/config/env';
 import { logger } from './core/config/logger';
