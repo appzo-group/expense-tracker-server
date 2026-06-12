@@ -7,7 +7,7 @@ async function main(): Promise<void> {
   await connectDb();
   const app = createApp();
   app.listen(env.port, () => {
-    logger.info(`Server listening on http://${env.ip_address}:${env.port} (${env.node_env})`);
+    logger.info(`Server listening on http://localhost:${env.port} (${env.node_env})`);
   });
 
 }

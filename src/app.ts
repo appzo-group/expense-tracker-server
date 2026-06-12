@@ -22,6 +22,14 @@ export function createApp(): Application {
 
   app.use('/api/v1', apiRouter);
 
+  app.get('/health', (_req, res) => {
+    res.status(200).send('OK');
+  });
+  app.get('/', (_req, res) => {
+    res.status(200).send('Expense Tracker Server Running');
+  });
+
+
   app.use(notFound);
   app.use(errorHandler);
 

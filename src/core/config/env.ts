@@ -6,7 +6,7 @@ export const env = {
 
     port: process.env.PORT,
     node_env: process.env.NODE_ENV,
-    ip_address: process.env.IP,
+    ip: process.env.IP,
     database_url: process.env.MONGO_URI,
     bcrypt_salt_rounds: process.env.BCRYPT_COST,
     isDev : process.env.NODE_ENV === 'development',
