@@ -9,7 +9,6 @@ async function main(): Promise<void> {
   app.listen(env.port, () => {
     logger.info(`Server listening on http://localhost:${env.port} (${env.node_env})`);
   });
-
 }
 
 main().catch((error) => {
