@@ -1,28 +1,12 @@
-import { Document, Schema, Types, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-import { TRANSACTION_TYPES, TransactionType } from '../../../enums/transaction';
+import { TRANSACTION_TYPES } from '../../../enums/transaction';
 import { softDeletePlugin } from '../../../shared/softDelete.plugin';
+import { ITransaction } from './transaction.interface';
 
-export interface ITransactionDocument extends Document {
-  userId: Types.ObjectId;
-  type: TransactionType;
-  amount: number;
-  category: string;
-  note?: string;
-  date: Date;
-  deletedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const transactionSchema = new Schema<ITransactionDocument>(
+const transactionSchema = new Schema<ITransaction>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     type: { type: String, enum: TRANSACTION_TYPES, required: true, index: true },
     amount: { type: Number, required: true, min: 0.01 },
     category: { type: String, required: true, trim: true },
@@ -43,13 +27,9 @@ const transactionSchema = new Schema<ITransactionDocument>(
   },
 );
 
-// Compound indexes for list/filter/analytics performance.
 transactionSchema.index({ userId: 1, date: -1 });
 transactionSchema.index({ userId: 1, type: 1, category: 1 });
 
 transactionSchema.plugin(softDeletePlugin);
 
-export const TransactionModel = model<ITransactionDocument>(
-  'Transaction',
-  transactionSchema,
-);
+export const TransactionModel = model<ITransaction>('Transaction', transactionSchema);

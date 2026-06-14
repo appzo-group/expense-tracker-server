@@ -3,9 +3,9 @@ import { StatusCodes } from 'http-status-codes';
 
 import { requireUserId } from '../../../helpers/requireUser';
 import sendResponse from '../../../shared/sendResponse';
-import { BudgetService } from '../budgets/budget.service';
-import { TokenService } from '../tokens/token.service';
-import { TransactionService } from '../transactions/transaction.service';
+import { deleteAllForUser as deleteAllBudgetsForUser } from '../budgets/budget.service';
+import { revokeAllForUser } from '../tokens/token.service';
+import { deleteAllForUser as deleteAllTransactionsForUser } from '../transactions/transaction.service';
 import { retrieveProfileToDB, updateProfileToDB, updateSettingsToDB, deleteAccountFromDB } from './user.service';
 
 
@@ -33,9 +33,9 @@ export const updateSettings = async (req: Request, res: Response): Promise<void>
 //delete User Account Controller
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
   await deleteAccountFromDB(requireUserId(req), req.body.password, {
-    deleteTransactions: (userId) => TransactionService.deleteAllForUser(userId),
-    deleteBudgets: (userId) => BudgetService.deleteAllForUser(userId),
-    revokeTokens: (userId) => TokenService.revokeAllForUser(userId),
+    deleteTransactions: (userId) => deleteAllTransactionsForUser(userId),
+    deleteBudgets: (userId) => deleteAllBudgetsForUser(userId),
+    revokeTokens: (userId) => revokeAllForUser(userId),
   });
   sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'Account deleted successfully', data: null });
 };

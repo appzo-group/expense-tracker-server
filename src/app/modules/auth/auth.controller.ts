@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import { AuthService } from './auth.service';
+import {
+  registerUserToDB,
+  loginUserFromDB,
+  newAccessTokenToUser,
+  logoutUserFromDB,
+  forgetPasswordToDB,
+  resetPasswordToDB,
+} from './auth.service';
 
-const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.registerUserToDB({
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
+  const result = await registerUserToDB({
     name: req.body.name,
     mail: req.body.mail,
     password: req.body.password,
@@ -17,66 +23,54 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
     message: 'Account created successfully',
     data: result,
   });
-});
+};
 
-const loginUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.loginUserFromDB({
-    mail: req.body.mail,
-    password: req.body.password,
-  });
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
+  const result = await loginUserFromDB({ mail: req.body.mail, password: req.body.password });
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Logged in successfully',
     data: result,
   });
-});
+};
 
-const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.newAccessTokenToUser(req.body.refreshToken);
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  const result = await newAccessTokenToUser(req.body.refreshToken);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Token refreshed successfully',
     data: result,
   });
-});
+};
 
-const logoutUser = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.logoutUserFromDB(req.body.refreshToken);
+export const logoutUser = async (req: Request, res: Response): Promise<void> => {
+  await logoutUserFromDB(req.body.refreshToken);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Logged out successfully',
     data: null,
   });
-});
+};
 
-const forgotPassword = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.forgetPasswordToDB(req.body.email);
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  const result = await forgetPasswordToDB(req.body.email);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'If the email exists, a reset link has been sent',
     data: result,
   });
-});
+};
 
-const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.resetPasswordToDB(req.body.token, req.body.password);
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  await resetPasswordToDB(req.body.token, req.body.password);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Password updated successfully',
     data: null,
   });
-});
-
-export const AuthController = {
-  registerUser,
-  loginUser,
-  refreshToken,
-  logoutUser,
-  forgotPassword,
-  resetPassword,
 };

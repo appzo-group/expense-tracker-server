@@ -1,3 +1,3 @@
 // Public API of the tokens module.
-export { TokenService } from './token.service';
+export { issuePairToDB, rotateToDB, revokeFromDB, revokeAllForUser, verifyRefreshToken } from './token.service';
 export type { ITokenPair } from './tokens.interface';

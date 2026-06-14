@@ -38,8 +38,4 @@ const budgetIdZodSchema = z.object({
   }),
 });
 
-export const BudgetValidation = {
-  createBudgetZodSchema,
-  updateBudgetZodSchema,
-  budgetIdZodSchema,
-};
+export { createBudgetZodSchema, updateBudgetZodSchema, budgetIdZodSchema };

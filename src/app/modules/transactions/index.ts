@@ -1,8 +1,25 @@
 // Public API of the transactions module.
 export { transactionRouter } from './transaction.routes';
-export { TransactionService } from './transaction.service';
+export {
+  createTransactionToDB,
+  updateTransactionToDB,
+  deleteTransactionFromDB,
+  deleteAllForUser as deleteAllTransactionsForUser,
+  getSingleTransactionFromDB,
+  getAllTransactionsFromDB,
+  getTotalsFromDB,
+  getByCategoryFromDB,
+  getMonthlyFromDB,
+  getRecentFromDB,
+  getSpentForCategoryFromDB,
+} from './transaction.service';
 export { parseListQuery, parseCreateBody, parseUpdateBody } from './transaction.controller';
-export { TransactionValidation } from './transaction.validation';
+export {
+  createTransactionZodSchema,
+  updateTransactionZodSchema,
+  listTransactionsZodSchema,
+  idParamZodSchema,
+} from './transaction.validation';
 export type {
   IPublicTransaction,
   ICategoryTotal,

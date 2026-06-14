@@ -1,32 +1,34 @@
-import { Document, Types, Model } from "mongoose";
 
+import { HydratedDocument, Model } from "mongoose";
 
-export interface IUser {
-  _id: Types.ObjectId;
+export interface IUserNotifications { budgetAlerts: boolean }
+
+export interface UserInterface {
   name: string;
   mail: string;
   password: string;
   currency: string;
-  notifications: { budgetAlerts: boolean };
+  notifications: IUserNotifications;
   passwordResetToken: string | null;
   passwordResetExpires: Date | null;
   deletedAt: Date | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+export type IUser = HydratedDocument<UserInterface>;
 
-export interface IPublicUser { id: string; name: string; mail: string; currency: string; notifications: { budgetAlerts: boolean } }
+export type IPublicUser = Pick<IUser, "name" | "mail" | "currency" | "notifications"> & { id: string };
+
 export interface ICreateUser { name: string; mail: string; password: string }
+
 export interface IUpdateProfile { name?: string }
-export interface IUpdateSettings { currency?: string; notifications?: { budgetAlerts?: boolean } }
 
-
+export interface IUpdateSettings { currency?: string; notifications?: Partial<IUserNotifications> }
 
 export interface UserModel extends Model<IUser> {
-  isExistUserById(id: string): Promise<IUser | null>;
-  isExistUserByEmail(email: string): Promise<IUser | null>;
-  isAccountCreated(id: string): Promise<boolean>;
+  findUserById(id: string): Promise<IUser | null>;
+  findUserByEmail(email: string): Promise<IUser | null>;
+  existsById(id: string): Promise<boolean>;
   isMatchPassword(password: string, hashPassword: string): Promise<boolean>;
 }
-

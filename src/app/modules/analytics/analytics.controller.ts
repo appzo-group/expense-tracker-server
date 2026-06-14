@@ -2,91 +2,80 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { requireUserId } from '../../../helpers/requireUser';
-import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { TransactionType } from '../../../enums/transaction';
-import { AnalyticsService } from './analytics.service';
+import {
+  getCategoryBreakdownFromDB,
+  getMonthlyAnalyticsFromDB,
+  getWeeklyAnalyticsFromDB,
+  getIncomeVsExpenseFromDB,
+  getFinancialInsightsFromDB,
+  getDashboardSummaryFromDB,
+} from './analytics.service';
 
-const getCategoryBreakdown = catchAsync(async (req: Request, res: Response) => {
+export const getCategoryBreakdown = async (req: Request, res: Response): Promise<void> => {
   const type = (req.query.type as TransactionType) ?? 'expense';
   const year = parseYear(req.query.year);
-  const result = await AnalyticsService.getCategoryBreakdownFromDB(
-    requireUserId(req),
-    type,
-    year,
-  );
+  const result = await getCategoryBreakdownFromDB(requireUserId(req), type, year);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Category breakdown fetched successfully',
     data: result,
   });
-});
+};
 
-const getMonthlyAnalytics = catchAsync(async (req: Request, res: Response) => {
+export const getMonthlyAnalytics = async (req: Request, res: Response): Promise<void> => {
   const year = parseYear(req.query.year);
-  const result = await AnalyticsService.getMonthlyAnalyticsFromDB(requireUserId(req), year);
+  const result = await getMonthlyAnalyticsFromDB(requireUserId(req), year);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Monthly analytics fetched successfully',
     data: result,
   });
-});
+};
 
-const getWeeklyAnalytics = catchAsync(async (req: Request, res: Response) => {
-  const result = await AnalyticsService.getWeeklyAnalyticsFromDB(requireUserId(req));
+export const getWeeklyAnalytics = async (req: Request, res: Response): Promise<void> => {
+  const result = await getWeeklyAnalyticsFromDB(requireUserId(req));
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Weekly analytics fetched successfully',
     data: result,
   });
-});
+};
 
-const getIncomeVsExpense = catchAsync(async (req: Request, res: Response) => {
+export const getIncomeVsExpense = async (req: Request, res: Response): Promise<void> => {
   const from = parseDate(req.query.from);
   const to = parseDate(req.query.to);
-  const result = await AnalyticsService.getIncomeVsExpenseFromDB(
-    requireUserId(req),
-    from,
-    to,
-  );
+  const result = await getIncomeVsExpenseFromDB(requireUserId(req), from, to);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Income vs expense fetched successfully',
     data: result,
   });
-});
+};
 
-const getFinancialInsights = catchAsync(async (req: Request, res: Response) => {
-  const result = await AnalyticsService.getFinancialInsightsFromDB(requireUserId(req));
+export const getFinancialInsights = async (req: Request, res: Response): Promise<void> => {
+  const result = await getFinancialInsightsFromDB(requireUserId(req));
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Financial insights fetched successfully',
     data: result,
   });
-});
+};
 
-const getDashboardSummary = catchAsync(async (req: Request, res: Response) => {
-  const result = await AnalyticsService.getDashboardSummaryFromDB(requireUserId(req));
+export const getDashboardSummary = async (req: Request, res: Response): Promise<void> => {
+  const result = await getDashboardSummaryFromDB(requireUserId(req));
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Dashboard summary fetched successfully',
     data: result,
   });
-});
-
-export const AnalyticsController = {
-  getCategoryBreakdown,
-  getMonthlyAnalytics,
-  getWeeklyAnalytics,
-  getIncomeVsExpense,
-  getFinancialInsights,
-  getDashboardSummary,
 };
 
 function parseYear(raw: unknown): number {

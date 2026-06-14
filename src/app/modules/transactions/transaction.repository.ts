@@ -1,153 +1,106 @@
 import { FilterQuery, Types } from 'mongoose';
 
 import { TransactionType } from '../../../enums/transaction';
-import { ICreateTransaction, IDateRange, IListTransactionsQuery, IUpdateTransaction } from './transaction.interface';
-import { ITransactionDocument, TransactionModel } from './transaction.model';
+import {
+  ICreateTransaction,
+  IDateRange,
+  IListTransactionsQuery,
+  ITransaction,
+  IUpdateTransaction,
+} from './transaction.interface';
+import { TransactionModel } from './transaction.model';
 
-/** All Mongoose access for the transactions collection (CRUD + aggregation). */
-export const transactionRepository = {
-  create(userId: string, input: ICreateTransaction) {
-    return TransactionModel.create({
-      userId: new Types.ObjectId(userId),
-      ...input,
-    });
-  },
+export const createTransaction = (userId: string, input: ICreateTransaction) =>
+  TransactionModel.create({ userId: new Types.ObjectId(userId), ...input });
 
-  findById(userId: string, id: string) {
-    if (!Types.ObjectId.isValid(id)) return null;
-    return TransactionModel.findOne({ _id: id, userId: new Types.ObjectId(userId) });
-  },
-
-  async update(
-    userId: string,
-    id: string,
-    input: IUpdateTransaction,
-    type?: TransactionType,
-  ) {
-    if (!Types.ObjectId.isValid(id)) return null;
-    const filter: FilterQuery<ITransactionDocument> = {
-      _id: id,
-      userId: new Types.ObjectId(userId),
-    };
-    if (type) filter.type = type;
-    return TransactionModel.findOneAndUpdate(filter, input, { new: true });
-  },
-
-  /** Soft-delete: marks the transaction as deleted rather than removing it. */
-  delete(userId: string, id: string, type?: TransactionType) {
-    if (!Types.ObjectId.isValid(id)) return null;
-    const filter: FilterQuery<ITransactionDocument> = {
-      _id: id,
-      userId: new Types.ObjectId(userId),
-    };
-    if (type) filter.type = type;
-    return TransactionModel.findOneAndUpdate(filter, { deletedAt: new Date() });
-  },
-
-  /** Soft-delete every transaction for a user (account deletion). */
-  deleteAllForUser(userId: string) {
-    return TransactionModel.updateMany(
-      { userId: new Types.ObjectId(userId) },
-      { deletedAt: new Date() },
-    );
-  },
-
-  async list(userId: string, query: IListTransactionsQuery, skip: number, limit: number) {
-    const filter = buildFilter(userId, query);
-    const sort = parseSort(query.sort);
-    const [items, total] = await Promise.all([
-      TransactionModel.find(filter).sort(sort).skip(skip).limit(limit),
-      TransactionModel.countDocuments(filter),
-    ]);
-    return { items, total };
-  },
-
-  recent(userId: string, limit: number) {
-    return TransactionModel.find({ userId: new Types.ObjectId(userId) })
-      .sort({ date: -1 })
-      .limit(limit);
-  },
-
-  /** Sum of amounts grouped by type within a date range. */
-  async totalsByType(userId: string, range: IDateRange) {
-    const rows = await TransactionModel.aggregate<{
-      _id: TransactionType;
-      total: number;
-    }>([
-      { $match: matchUserRange(userId, range) },
-      { $group: { _id: '$type', total: { $sum: '$amount' } } },
-    ]);
-    const totals = { income: 0, expense: 0 };
-    for (const row of rows) totals[row._id] = row.total;
-    return totals;
-  },
-
-  /** Sum grouped by category for a given type within a range. */
-  async groupByCategory(userId: string, type: TransactionType, range: IDateRange) {
-    return TransactionModel.aggregate<{ category: string; total: number }>([
-      { $match: { ...matchUserRange(userId, range), type } },
-      { $group: { _id: '$category', total: { $sum: '$amount' } } },
-      { $project: { _id: 0, category: '$_id', total: 1 } },
-      { $sort: { total: -1 } },
-    ]);
-  },
-
-  /** Monthly income+expense totals for a calendar year. */
-  async monthly(userId: string, year: number) {
-    return TransactionModel.aggregate<{
-      month: number;
-      type: TransactionType;
-      total: number;
-    }>([
-      {
-        $match: {
-          userId: new Types.ObjectId(userId),
-          date: {
-            $gte: new Date(Date.UTC(year, 0, 1)),
-            $lte: new Date(Date.UTC(year, 11, 31, 23, 59, 59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: { month: { $month: '$date' }, type: '$type' },
-          total: { $sum: '$amount' },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          month: '$_id.month',
-          type: '$_id.type',
-          total: 1,
-        },
-      },
-    ]);
-  },
-
-  /** Total spent (expense) for one category within a range — used by budgets. */
-  async spentForCategory(userId: string, category: string, range: IDateRange) {
-    const rows = await TransactionModel.aggregate<{ total: number }>([
-      {
-        $match: {
-          ...matchUserRange(userId, range),
-          type: 'expense',
-          category,
-        },
-      },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-    return rows[0]?.total ?? 0;
-  },
+export const findTransactionById = (userId: string, id: string) => {
+  if (!Types.ObjectId.isValid(id)) return null;
+  return TransactionModel.findOne({ _id: id, userId: new Types.ObjectId(userId) });
 };
 
-function buildFilter(
+export const updateTransaction = async (
+  userId: string,
+  id: string,
+  input: IUpdateTransaction,
+  type?: TransactionType,
+) => {
+  if (!Types.ObjectId.isValid(id)) return null;
+  const filter: FilterQuery<ITransaction> = { _id: id, userId: new Types.ObjectId(userId) };
+  if (type) filter.type = type;
+  return TransactionModel.findOneAndUpdate(filter, input, { new: true });
+};
+
+export const deleteTransaction = (userId: string, id: string, type?: TransactionType) => {
+  if (!Types.ObjectId.isValid(id)) return null;
+  const filter: FilterQuery<ITransaction> = { _id: id, userId: new Types.ObjectId(userId) };
+  if (type) filter.type = type;
+  return TransactionModel.findOneAndUpdate(filter, { deletedAt: new Date() });
+};
+
+export const deleteAllTransactionsForUser = (userId: string) =>
+  TransactionModel.updateMany({ userId: new Types.ObjectId(userId) }, { deletedAt: new Date() });
+
+export const listTransactions = async (
   userId: string,
   query: IListTransactionsQuery,
-): FilterQuery<ITransactionDocument> {
-  const filter: FilterQuery<ITransactionDocument> = {
-    userId: new Types.ObjectId(userId),
-  };
+  skip: number,
+  limit: number,
+) => {
+  const filter = buildFilter(userId, query);
+  const sort = parseSort(query.sort);
+  const [items, total] = await Promise.all([
+    TransactionModel.find(filter).sort(sort).skip(skip).limit(limit),
+    TransactionModel.countDocuments(filter),
+  ]);
+  return { items, total };
+};
+
+export const recentTransactions = (userId: string, limit: number) =>
+  TransactionModel.find({ userId: new Types.ObjectId(userId) }).sort({ date: -1 }).limit(limit);
+
+export const totalsByType = async (userId: string, range: IDateRange) => {
+  const rows = await TransactionModel.aggregate<{ _id: TransactionType; total: number }>([
+    { $match: matchUserRange(userId, range) },
+    { $group: { _id: '$type', total: { $sum: '$amount' } } },
+  ]);
+  const totals = { income: 0, expense: 0 };
+  for (const row of rows) totals[row._id] = row.total;
+  return totals;
+};
+
+export const groupByCategory = (userId: string, type: TransactionType, range: IDateRange) =>
+  TransactionModel.aggregate<{ category: string; total: number }>([
+    { $match: { ...matchUserRange(userId, range), type } },
+    { $group: { _id: '$category', total: { $sum: '$amount' } } },
+    { $project: { _id: 0, category: '$_id', total: 1 } },
+    { $sort: { total: -1 } },
+  ]);
+
+export const monthlyTotals = (userId: string, year: number) =>
+  TransactionModel.aggregate<{ month: number; type: TransactionType; total: number }>([
+    {
+      $match: {
+        userId: new Types.ObjectId(userId),
+        date: {
+          $gte: new Date(Date.UTC(year, 0, 1)),
+          $lte: new Date(Date.UTC(year, 11, 31, 23, 59, 59)),
+        },
+      },
+    },
+    { $group: { _id: { month: { $month: '$date' }, type: '$type' }, total: { $sum: '$amount' } } },
+    { $project: { _id: 0, month: '$_id.month', type: '$_id.type', total: 1 } },
+  ]);
+
+export const spentForCategory = async (userId: string, category: string, range: IDateRange) => {
+  const rows = await TransactionModel.aggregate<{ total: number }>([
+    { $match: { ...matchUserRange(userId, range), type: 'expense', category } },
+    { $group: { _id: null, total: { $sum: '$amount' } } },
+  ]);
+  return rows[0]?.total ?? 0;
+};
+
+function buildFilter(userId: string, query: IListTransactionsQuery): FilterQuery<ITransaction> {
+  const filter: FilterQuery<ITransaction> = { userId: new Types.ObjectId(userId) };
   if (query.type) filter.type = query.type;
   if (query.category) filter.category = query.category;
   if (query.from || query.to) {
@@ -162,13 +115,8 @@ function buildFilter(
   return filter;
 }
 
-function matchUserRange(
-  userId: string,
-  range: IDateRange,
-): FilterQuery<ITransactionDocument> {
-  const match: FilterQuery<ITransactionDocument> = {
-    userId: new Types.ObjectId(userId),
-  };
+function matchUserRange(userId: string, range: IDateRange): FilterQuery<ITransaction> {
+  const match: FilterQuery<ITransaction> = { userId: new Types.ObjectId(userId) };
   if (range.from || range.to) {
     match.date = {};
     if (range.from) match.date.$gte = range.from;

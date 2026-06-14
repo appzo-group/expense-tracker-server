@@ -49,7 +49,7 @@ const createResetPasswordZodSchema = z.object({
   }),
 });
 
-export const AuthValidation = {
+export {
   createRegisterZodSchema,
   createLoginZodSchema,
   createRefreshZodSchema,

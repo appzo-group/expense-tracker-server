@@ -2,30 +2,27 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { requireUserId } from '../../../helpers/requireUser';
-import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
+import { parseCreateBody, parseListQuery, parseUpdateBody } from '../transactions';
 import {
-  parseCreateBody,
-  parseListQuery,
-  parseUpdateBody,
-} from '../transactions';
-import { ExpenseService } from './expense.service';
+  createExpenseToDB,
+  updateExpenseToDB,
+  deleteExpenseFromDB,
+  getAllExpensesFromDB,
+} from './expense.service';
 
-const createExpense = catchAsync(async (req: Request, res: Response) => {
-  const result = await ExpenseService.createExpenseToDB(
-    requireUserId(req),
-    parseCreateBody(req.body),
-  );
+export const createExpense = async (req: Request, res: Response): Promise<void> => {
+  const result = await createExpenseToDB(requireUserId(req), parseCreateBody(req.body));
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.CREATED,
     message: 'Expense created successfully',
     data: result,
   });
-});
+};
 
-const updateExpense = catchAsync(async (req: Request, res: Response) => {
-  const result = await ExpenseService.updateExpenseToDB(
+export const updateExpense = async (req: Request, res: Response): Promise<void> => {
+  const result = await updateExpenseToDB(
     requireUserId(req),
     req.params.id,
     parseUpdateBody(req.body),
@@ -36,20 +33,20 @@ const updateExpense = catchAsync(async (req: Request, res: Response) => {
     message: 'Expense updated successfully',
     data: result,
   });
-});
+};
 
-const deleteExpense = catchAsync(async (req: Request, res: Response) => {
-  await ExpenseService.deleteExpenseFromDB(requireUserId(req), req.params.id);
+export const deleteExpense = async (req: Request, res: Response): Promise<void> => {
+  await deleteExpenseFromDB(requireUserId(req), req.params.id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Expense deleted successfully',
     data: null,
   });
-});
+};
 
-const getAllExpenses = catchAsync(async (req: Request, res: Response) => {
-  const result = await ExpenseService.getAllExpensesFromDB(
+export const getAllExpenses = async (req: Request, res: Response): Promise<void> => {
+  const result = await getAllExpensesFromDB(
     requireUserId(req),
     parseListQuery(req.query, 'expense'),
   );
@@ -60,11 +57,4 @@ const getAllExpenses = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
     data: result.items,
   });
-});
-
-export const ExpenseController = {
-  createExpense,
-  updateExpense,
-  deleteExpense,
-  getAllExpenses,
 };

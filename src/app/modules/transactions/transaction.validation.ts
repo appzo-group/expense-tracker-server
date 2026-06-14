@@ -2,8 +2,7 @@ import { z } from 'zod';
 
 import { TRANSACTION_TYPES } from '../../../enums/transaction';
 
-/** Body validation for creating a transaction (reused by expenses/income). */
-export const createTransactionZodSchema = z.object({
+const createTransactionZodSchema = z.object({
   body: z.object({
     amount: z
       .number({ required_error: 'Amount is required' })
@@ -18,8 +17,7 @@ export const createTransactionZodSchema = z.object({
   }),
 });
 
-/** Body validation for updating a transaction — all fields optional. */
-export const updateTransactionZodSchema = z.object({
+const updateTransactionZodSchema = z.object({
   body: z.object({
     amount: z.number().gt(0, 'Amount must be greater than zero').optional(),
     category: z.string().min(1).optional(),
@@ -28,7 +26,7 @@ export const updateTransactionZodSchema = z.object({
   }),
 });
 
-export const listTransactionsZodSchema = z.object({
+const listTransactionsZodSchema = z.object({
   query: z.object({
     type: z.enum(TRANSACTION_TYPES).optional(),
     category: z.string().optional(),
@@ -41,13 +39,13 @@ export const listTransactionsZodSchema = z.object({
   }),
 });
 
-export const idParamZodSchema = z.object({
+const idParamZodSchema = z.object({
   params: z.object({
     id: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid id'),
   }),
 });
 
-export const TransactionValidation = {
+export {
   createTransactionZodSchema,
   updateTransactionZodSchema,
   listTransactionsZodSchema,

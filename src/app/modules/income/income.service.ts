@@ -1,30 +1,20 @@
+import { IListTransactionsQuery, IUpdateTransaction } from '../transactions/transaction.interface';
 import {
-  ICreateTransaction,
-  IListTransactionsQuery,
-  IUpdateTransaction,
-} from '../transactions/transaction.interface';
-import { TransactionService } from '../transactions/transaction.service';
+  createTransactionToDB,
+  updateTransactionToDB,
+  deleteTransactionFromDB,
+  getAllTransactionsFromDB,
+} from '../transactions/transaction.service';
+import { IIncomeDto } from './income.interface';
 
-type IIncomeDto = Omit<ICreateTransaction, 'type'>;
+export const createIncomeToDB = (userId: string, dto: IIncomeDto) =>
+  createTransactionToDB(userId, { ...dto, type: 'income' });
 
-/**
- * Thin wrapper over TransactionService with `type: 'income'` injected.
- * No model/repository of its own.
- */
-export const IncomeService = {
-  createIncomeToDB(userId: string, dto: IIncomeDto) {
-    return TransactionService.createTransactionToDB(userId, { ...dto, type: 'income' });
-  },
+export const updateIncomeToDB = (userId: string, id: string, dto: IUpdateTransaction) =>
+  updateTransactionToDB(userId, id, dto, 'income');
 
-  updateIncomeToDB(userId: string, id: string, dto: IUpdateTransaction) {
-    return TransactionService.updateTransactionToDB(userId, id, dto, 'income');
-  },
+export const deleteIncomeFromDB = (userId: string, id: string) =>
+  deleteTransactionFromDB(userId, id, 'income');
 
-  deleteIncomeFromDB(userId: string, id: string) {
-    return TransactionService.deleteTransactionFromDB(userId, id, 'income');
-  },
-
-  getAllIncomeFromDB(userId: string, query: IListTransactionsQuery) {
-    return TransactionService.getAllTransactionsFromDB(userId, { ...query, type: 'income' });
-  },
-};
+export const getAllIncomeFromDB = (userId: string, query: IListTransactionsQuery) =>
+  getAllTransactionsFromDB(userId, { ...query, type: 'income' });

@@ -2,22 +2,15 @@ import { Router } from 'express';
 
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
-import { TransactionController } from './transaction.controller';
-import { TransactionValidation } from './transaction.validation';
+import catchAsync from '../../../shared/catchAsync';
+import { getAllTransactions, getSingleTransaction } from './transaction.controller';
+import { listTransactionsZodSchema, idParamZodSchema } from './transaction.validation';
 
 const router = Router();
 
 router.use(auth());
 
-router.get(
-  '/',
-  validateRequest(TransactionValidation.listTransactionsZodSchema),
-  TransactionController.getAllTransactions,
-);
-router.get(
-  '/:id',
-  validateRequest(TransactionValidation.idParamZodSchema),
-  TransactionController.getSingleTransaction,
-);
+router.get('/', validateRequest(listTransactionsZodSchema), catchAsync(getAllTransactions));
+router.get('/:id', validateRequest(idParamZodSchema), catchAsync(getSingleTransaction));
 
 export const transactionRouter = router;

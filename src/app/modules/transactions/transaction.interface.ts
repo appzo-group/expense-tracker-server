@@ -1,4 +1,29 @@
+import { HydratedDocument } from 'mongoose';
+import { Types } from 'mongoose';
 import { TransactionType } from '../../../enums/transaction';
+
+export interface TransactionInterface {
+  userId: Types.ObjectId;
+  type: TransactionType;
+  amount: number;
+  category: string;
+  note?: string;
+  date: Date;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type ITransaction = HydratedDocument<TransactionInterface>;
+
+export type IPublicTransaction = {
+  id: string;
+  type: TransactionType;
+  amount: number;
+  category: string;
+  note?: string;
+  date: string;
+};
 
 export interface ICreateTransaction {
   type: TransactionType;
@@ -40,13 +65,4 @@ export interface IMonthlyTotal {
   month: number;
   income: number;
   expense: number;
-}
-
-export interface IPublicTransaction {
-  id: string;
-  type: TransactionType;
-  amount: number;
-  category: string;
-  note?: string;
-  date: string;
 }
