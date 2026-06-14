@@ -1,9 +1,9 @@
 import { Application } from 'express';
 import request from 'supertest';
 
-import { createApp } from '../../src/app';
+import app from '../../src/app';
 
-export const app: Application = createApp();
+export { app } ;
 
 export interface TestSession {
   accessToken: string;
@@ -22,7 +22,7 @@ export async function registerAndLogin(
     password: overrides.password ?? 'password123',
   };
 
-  const res = await request(app).post('/api/v1/auth/register').send(payload);
+  const res = await request(app as Application).post('/api/v1/auth/register').send(payload);
   const { user, accessToken, refreshToken } = res.body.data;
 
   return {

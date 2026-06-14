@@ -1,37 +1,35 @@
 import cors from 'cors';
-import express, { Application } from 'express';
+import express from 'express';
 import helmet from 'helmet';
-import { errorHandler } from './core/middleware/error.middleware';
-import { notFound } from './core/middleware/notFound.middleware';
-import { globalLimiter } from './core/middleware/rateLimit.middleware';
-import { sanitize } from './core/middleware/sanitize.middleware';
-import { apiRouter } from './routes';
-import { monitorApiRequest } from './core/config/logger';
+
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import { notFound } from './app/middlewares/notFound';
+import { globalLimiter } from './app/middlewares/rateLimit';
+import { sanitize } from './app/middlewares/sanitize';
+import apiRouter from './app/routes';
+import { monitorApiRequest } from './shared/logger';
 
 
-export default function createApp(): Application {
-  const app = express();
+const app = express();
 
-  app.use(monitorApiRequest);
-  app.use(helmet());
-  app.use(cors({ credentials: true }));
-  app.use(express.json({ limit: '100mb' }));
-  app.use(express.urlencoded({ extended: true }));
-  app.use(sanitize);
-  app.use(globalLimiter);
+app.use(monitorApiRequest);
+app.use(helmet());
+app.use(cors({ credentials: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(sanitize);
+app.use(globalLimiter);
 
-  app.use('/api/v1', apiRouter);
+app.use('/api/v1', apiRouter);
 
-  app.get('/health', (_req, res) => {
-    res.status(200).send('OK');
-  });
-  app.get('/', (_req, res) => {
-    res.status(200).send('Expense Tracker Server Running');
-  });
+app.get('/health', (_req, res) => {
+  res.status(200).send('OK');
+});
+app.get('/', (_req, res) => {
+  res.status(200).send('Expense Tracker Server Running');
+});
 
+app.use(notFound);
+app.use(globalErrorHandler);
 
-  app.use(notFound);
-  app.use(errorHandler);
-
-  return app;
-}
+export default app;
