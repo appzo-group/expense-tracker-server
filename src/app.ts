@@ -12,6 +12,9 @@ import { monitorApiRequest } from './shared/logger';
 
 const app = express();
 
+
+
+
 app.use(monitorApiRequest);
 app.use(helmet());
 app.use(cors({ credentials: true }));

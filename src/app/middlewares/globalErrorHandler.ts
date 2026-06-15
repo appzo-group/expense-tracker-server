@@ -1,13 +1,13 @@
 import { ErrorRequestHandler } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { ZodError } from 'zod';
-
 import config from '../../config';
 import { errorLogger } from '../../shared/logger';
 import { IErrorMessage } from '../../types/errors.types';
 import ApiError from '../errors/ApiErrors';
 import handleValidationError from '../errors/handleValidationError';
 import handleZodError from '../errors/handleZodError';
+import { logger } from '../../shared/logger';
 
 const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   let statusCode = 500;
@@ -47,6 +47,10 @@ const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       `Unhandled error: ${err instanceof Error ? err.stack ?? err.message : String(err)}`,
     );
   }
+
+  logger.info(
+    `statusCode: ${statusCode} message: ${message} data: ${JSON.stringify(errorMessages, null, 2)} meta: ${JSON.stringify(err, null, 2)}`,
+  );
 
   res.status(statusCode).json({
     success: false,

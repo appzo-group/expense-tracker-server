@@ -1,6 +1,6 @@
 import { Response } from 'express';
-
 import { IMeta } from '../types/pagination.types';
+import { logger } from './logger';
 
 type IApiResponse<T> = {
   success: boolean;

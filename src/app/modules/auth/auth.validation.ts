@@ -6,9 +6,9 @@ const createRegisterZodSchema = z.object({
       .string({ required_error: 'Name is required' })
       .min(1, 'Name is required')
       .max(60, 'Name must be 60 characters or fewer'),
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email({ message: 'Enter a valid email' }),
+    mail: z
+      .string({ required_error: 'mail is required' })
+      .email({ message: 'Enter a valid mail' }),
     password: z
       .string({ required_error: 'Password is required' })
       .min(8, 'Password must be at least 8 characters'),
@@ -17,9 +17,7 @@ const createRegisterZodSchema = z.object({
 
 const createLoginZodSchema = z.object({
   body: z.object({
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email({ message: 'Enter a valid email' }),
+    mail: z.string({ required_error: 'Mail is required' }).email({ message: 'Enter a valid mail' }),
     password: z.string({ required_error: 'Password is required' }).min(1, 'Password is required'),
   }),
 });
@@ -34,9 +32,7 @@ const createRefreshZodSchema = z.object({
 
 const createForgotPasswordZodSchema = z.object({
   body: z.object({
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email({ message: 'Enter a valid email' }),
+    mail: z.string({ required_error: 'Mail is required' }).email({ message: 'Enter a valid mail' }),
   }),
 });
 
