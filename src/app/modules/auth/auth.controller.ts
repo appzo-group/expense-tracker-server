@@ -14,7 +14,7 @@ import {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const result = await registerUserToDB({
     name: req.body.name,
-    mail: req.body.mail,
+    email: req.body.email,
     password: req.body.password,
   });
   sendResponse(res, {
@@ -26,7 +26,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 };
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  const result = await loginUserFromDB({ mail: req.body.mail, password: req.body.password });
+  const result = await loginUserFromDB({ email: req.body.email, password: req.body.password });
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

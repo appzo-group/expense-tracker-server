@@ -48,9 +48,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     );
   }
 
-  logger.info(
-    `statusCode: ${statusCode} message: ${message} data: ${JSON.stringify(errorMessages, null, 2)} meta: ${JSON.stringify(err, null, 2)}`,
-  );
+
 
   res.status(statusCode).json({
     success: false,

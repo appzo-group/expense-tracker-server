@@ -4,7 +4,7 @@ import { IUser, UserModel } from './user.interface';
 
 const userSchema = new Schema<IUser, UserModel>({
   name: { type: String, required: true, trim: true },
-  mail: { type: String, required: true, lowercase: true, trim: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
   password: { type: String, required: true, select: false },
   currency: { type: String, default: 'USD' },
   notifications: { budgetAlerts: { type: Boolean, default: true } },
@@ -14,7 +14,7 @@ const userSchema = new Schema<IUser, UserModel>({
 
 },
   { timestamps: true, versionKey: false });
-userSchema.index({ mail: 1 }, { unique: true, partialFilterExpression: { deletedAt: null } },
+userSchema.index({ email: 1 }, { unique: true, partialFilterExpression: { deletedAt: null } },
 );
 
 export const User = model<IUser, UserModel>("User", userSchema);

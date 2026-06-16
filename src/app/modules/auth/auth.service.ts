@@ -5,28 +5,30 @@ import ApiError from '../../errors/ApiErrors';
 import { issuePairToDB, rotateToDB, revokeFromDB, revokeAllForUser } from '../tokens';
 import { IAuthResult, ILoginInput, IRegisterInput } from './auth.interface';
 import {
-  checkMailExistsToDB,
+  existsByEmail,
   createUserToDB,
-  findByMailWithPassword,
+  findByEmailWithPassword,
   toPublic,
-  findByMail,
+  findByEmail,
   findByResetTokenHash,
   setResetToken,
   setPassword,
 } from '../users/user.service';
 
 export const registerUserToDB = async (input: IRegisterInput): Promise<IAuthResult> => {
-  if (await checkMailExistsToDB(input.mail)) {
+
+
+  if (await existsByEmail(input.email)) {
     throw new ApiError(409, 'An account with this email already exists');
   }
   const passwordHash = await passwordHelper.hash(input.password);
-  const user = await createUserToDB({ name: input.name, mail: input.mail, password: passwordHash });
+  const user = await createUserToDB({ name: input.name, email: input.email, password: passwordHash });
   const tokens = await issuePairToDB(user.id.toString());
   return { user: toPublic(user), ...tokens };
 };
 
 export const loginUserFromDB = async (input: ILoginInput): Promise<IAuthResult> => {
-  const user = await findByMailWithPassword(input.mail);
+  const user = await findByEmailWithPassword(input.email);
   if (!user) throw new ApiError(401, 'Invalid email or password');
 
   const valid = await passwordHelper.compare(input.password, user.password);
@@ -42,13 +44,13 @@ export const logoutUserFromDB = async (refreshToken: string): Promise<void> => {
   await revokeFromDB(refreshToken);
 };
 
-export const forgetPasswordToDB = async (mail: string): Promise<{ resetToken?: string }> => {
-  const user = await findByMail(mail);
+export const forgetPasswordToDB = async (email: string): Promise<{ resetToken?: string }> => {
+  const user = await findByEmail(email);
   if (!user) return {};
 
   const { token, tokenHash } = createOpaqueToken();
   await setResetToken(user.id, tokenHash, new Date(Date.now() + 15 * 60 * 1000));
-  logger.info(`Password reset requested for ${mail}`);
+  logger.info(`Password reset requested for ${email}`);
 
   return config.isTest ? { resetToken: token } : {};
 };

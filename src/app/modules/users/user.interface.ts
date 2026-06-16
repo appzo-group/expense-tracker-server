@@ -5,7 +5,7 @@ export interface IUserNotifications { budgetAlerts: boolean }
 
 export interface UserInterface {
   name: string;
-  mail: string;
+  email: string;
   password: string;
   currency: string;
   notifications: IUserNotifications;
@@ -18,17 +18,14 @@ export interface UserInterface {
 
 export type IUser = HydratedDocument<UserInterface>;
 
-export type IPublicUser = Pick<IUser, "name" | "mail" | "currency" | "notifications"> & { id: string };
+export type IPublicUser = Pick<IUser, "name" | "email" | "currency" | "notifications"> & { id: string };
 
-export interface ICreateUser { name: string; mail: string; password: string }
+export interface ICreateUser { name: string; email: string; password: string }
 
 export interface IUpdateProfile { name?: string }
 
 export interface IUpdateSettings { currency?: string; notifications?: Partial<IUserNotifications> }
 
 export interface UserModel extends Model<IUser> {
-  findUserById(id: string): Promise<IUser | null>;
-  findUserByEmail(email: string): Promise<IUser | null>;
-  existsById(id: string): Promise<boolean>;
   isMatchPassword(password: string, hashPassword: string): Promise<boolean>;
 }

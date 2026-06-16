@@ -32,7 +32,7 @@ export const monitorApiRequest = (req: Request, res: Response, next: NextFunctio
   res.on('finish', () => {
     const diff = process.hrtime(start);
     const ms = (diff[0] * 1000 + diff[1] / 1e6).toFixed(2);
-    logger.info(`${req.method} ${req.originalUrl} → ${ms} ms`);
+    logger.info(`${req.method} ${res.statusCode} ${req.originalUrl} → ${ms} ms`);
 
   });
   next();

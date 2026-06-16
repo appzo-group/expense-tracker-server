@@ -2,12 +2,12 @@ import { IPublicUser } from '../users/user.interface';
 
 export interface IRegisterInput {
   name: string;
-  mail: string;
+  email: string;
   password: string;
 }
 
 export interface ILoginInput {
-  mail: string;
+  email: string;
   password: string;
 }
 

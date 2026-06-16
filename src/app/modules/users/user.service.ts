@@ -2,9 +2,9 @@ import ApiError from '../../errors/ApiErrors';
 import { ICreateUser, IPublicUser, IUpdateProfile, IUpdateSettings, IUser, } from './user.interface';
 import {
   createUser,
-  existsByMail,
-  findByMail,
-  findByMailWithPassword,
+  existsByEmail,
+  findByEmail,
+  findByEmailWithPassword,
   findById,
   findByIdWithPassword,
   deleteById,
@@ -14,8 +14,6 @@ import {
 export const toPublic = (doc: any): IPublicUser => doc
 
 export const createUserToDB = async (input: ICreateUser): Promise<IUser> => createUser(input);
-
-export const checkMailExistsToDB = async (mail: string): Promise<boolean> => (await existsByMail(mail)) !== null;
 
 export const retrieveProfileToDB = async (userId: string): Promise<IPublicUser> => {
   const user = await findById(userId);
@@ -97,4 +95,4 @@ export const deleteAccountFromDB = async (userId: string, plainPassword: string,
 };
 
 
-export { findByMail, findByMailWithPassword, findByResetTokenHash, };
+export { findByEmail, findByEmailWithPassword, findByResetTokenHash, existsByEmail };
