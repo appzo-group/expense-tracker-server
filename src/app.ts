@@ -11,6 +11,8 @@ import { monitorApiRequest } from './shared/logger';
 
 
 const app = express();
+app.set('trust proxy', 1);
+
 
 app.use(monitorApiRequest);
 app.use(helmet());
