@@ -20,7 +20,7 @@ app.use(cors({ credentials: true }));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(sanitize);
-app.use(globalLimiter);
+// app.use(globalLimiter);
 
 app.use('/api/v1', apiRouter);
 
