@@ -6,7 +6,6 @@ import config from '../config';
 export const logger = winston.createLogger({
   level: config.isTest ? 'silent' : 'info',
   silent: config.isTest,
-
   format: winston.format.combine(
     winston.format.timestamp(),
     config.isTest
