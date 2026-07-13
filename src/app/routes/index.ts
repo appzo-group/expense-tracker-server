@@ -10,10 +10,6 @@ import { userRouter } from '../modules/users';
 
 const apiRouter = Router();
 
-apiRouter.get('/health', (_req, res) => {
-  res.json({ success: true, message: 'ok', data: { status: 'healthy' } });
-});
-
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/users', userRouter);
 apiRouter.use('/transactions', transactionRouter);

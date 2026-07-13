@@ -11,8 +11,13 @@ import {
   findByResetTokenHash,
 } from './user.repository';
 
-export const toPublic = (doc: any): IPublicUser => doc
-
+export const toPublic = (user: IUser): IPublicUser => ({
+  id: user._id.toString(),
+  name: user.name,
+  email: user.email,
+  currency: user.currency,
+  notifications: user.notifications,
+});
 export const createUserToDB = async (input: ICreateUser): Promise<IUser> => createUser(input);
 
 export const retrieveProfileToDB = async (userId: string): Promise<IPublicUser> => {
@@ -68,14 +73,14 @@ export const setPassword = async (user: any, passwordHash: string): Promise<void
 };
 
 export const deleteAccountFromDB = async (userId: string, plainPassword: string,
-  dependencies: {
-    deleteTransactions: (userId: string) => Promise<void>;
-    deleteBudgets: (userId: string) => Promise<void>;
-    revokeTokens: (userId: string) => Promise<unknown>;
-  },): Promise<void> => {
-  const user = await findByIdWithPassword(userId);
+): Promise<void> => {
+  const user = await findById(userId);
 
   if (!user) throw new ApiError(404, 'User not found')
+
+  user.deletedAt = new Date();
+  await user.save();
+
 
   return;
 

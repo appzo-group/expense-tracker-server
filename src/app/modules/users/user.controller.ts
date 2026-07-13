@@ -32,11 +32,7 @@ export const updateSettings = async (req: Request, res: Response): Promise<void>
 
 //delete User Account Controller
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
-  await deleteAccountFromDB(requireUserId(req), req.body.password, {
-    deleteTransactions: (userId) => deleteAllTransactionsForUser(userId),
-    deleteBudgets: (userId) => deleteAllBudgetsForUser(userId),
-    revokeTokens: (userId) => revokeAllForUser(userId),
-  });
+  await deleteAccountFromDB(requireUserId(req), req.body.password);
   sendResponse(res, { success: true, statusCode: StatusCodes.OK, message: 'Account deleted successfully', data: null });
 };
 

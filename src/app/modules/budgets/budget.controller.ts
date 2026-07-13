@@ -4,10 +4,17 @@ import { StatusCodes } from 'http-status-codes';
 import { requireUserId } from '../../../helpers/requireUser';
 import sendResponse from '../../../shared/sendResponse';
 import { ICreateBudget, IUpdateBudget } from './budget.interface';
-import { getAllBudgetsFromDB, createBudgetToDB, updateBudgetToDB, deleteBudgetFromDB } from './budget.service';
+import { getAllBudgetsFromDB, createBudgetToDB, updateBudgetToDB, deleteBudgetFromDB, getBudgetsFromDB } from './budget.service';
 
 export const getAllBudgets = async (req: Request, res: Response): Promise<void> => {
   const result = await getAllBudgetsFromDB(requireUserId(req));
+  sendResponse(res, {
+    success: true, statusCode: StatusCodes.OK, message: 'Budgets fetched successfully', data: result,
+  });
+};
+
+export const getBudgets = async (req: Request, res: Response): Promise<void> => {
+  const result = await getBudgetsFromDB(requireUserId(req), req.params.id);
   sendResponse(res, {
     success: true, statusCode: StatusCodes.OK, message: 'Budgets fetched successfully', data: result,
   });

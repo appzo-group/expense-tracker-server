@@ -11,6 +11,7 @@ const router = Router();
 router.use(auth());
 
 router.get('/', catchAsync(getAllBudgets));
+router.get('/:id', catchAsync(getAllBudgets));
 router.post('/', validateRequest(createBudgetZodSchema), catchAsync(createBudget));
 router.patch('/:id', validateRequest(budgetIdZodSchema), validateRequest(updateBudgetZodSchema), catchAsync(updateBudget));
 router.delete('/:id', validateRequest(budgetIdZodSchema), catchAsync(deleteBudget));

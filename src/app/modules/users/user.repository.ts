@@ -19,8 +19,5 @@ export const findByResetTokenHash = async (tokenHash: string) => User.findOne({ 
 
 export const existsByEmail = async (email: string): Promise<boolean> => {
     const result = await User.exists({ email: email.toLowerCase() });
-
-    console.log('exists result:', result);
-
     return result !== null;
 };

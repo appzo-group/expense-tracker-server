@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import app from './app';
 import config from './config';
 import { errorLogger, logger } from './shared/logger';
+import { dbconnect } from './app/db/mongodb';
 
 process.on('uncaughtException', (error) => {
   errorLogger.error('uncaughtException Detected', error);
@@ -13,7 +14,7 @@ let server: ReturnType<typeof app.listen>;
 
 async function main(): Promise<void> {
   try {
-    await connectWithRetry();
+    await dbconnect();
     server = app.listen(Number(config.port), () => {
       logger.info(`Application listening on port: ${config.port} (${config.node_env})`);
     });
@@ -34,21 +35,6 @@ async function main(): Promise<void> {
   });
 }
 
-async function connectWithRetry(maxAttempts = 5): Promise<void> {
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      mongoose.set('strictQuery', true);
-      await mongoose.connect(config.database_url);
-      logger.info('Database connected successfully');
-      return;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      logger.warn(`Database connection attempt ${attempt} failed: ${message}`);
-      if (attempt === maxAttempts) throw error;
-      await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
-    }
-  }
-}
 
 main();
 
