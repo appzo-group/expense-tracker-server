@@ -45,3 +45,5 @@ process.on('SIGTERM', () => {
   logger.info('SIGTERM received');
   if (server) server.close();
 });
+
+export default app;
