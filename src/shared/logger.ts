@@ -15,9 +15,9 @@ export const logger = winston.createLogger({
       )
       : winston.format.json(),
   ),
-  // transports: [new winston.transports.File(
-  //   { filename: "app.log" }
-  // )],
+  transports: [new winston.transports.File(
+    { filename: "app.log" }
+  )],
 });
 
 export const errorLogger = winston.createLogger({
