@@ -4,12 +4,14 @@ import mongoose from 'mongoose';
 import config from '../../config';
 import { errorLogger, logger } from '../../shared/logger';
 
-export async function dbconnect(maxAttempts = 5): Promise<void> {
+export async function dbconnect(): Promise<void> {
 
     try {
-       // mongoose.set('strictQuery', true);
+        // mongoose.set('strictQuery', true);
         await mongoose.connect(config.database_url);
         logger.info('Database connected successfully');
+        console.log('Database connected successfully');
+        
         return;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
