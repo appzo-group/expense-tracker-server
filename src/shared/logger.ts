@@ -15,9 +15,9 @@ export const logger = winston.createLogger({
       )
       : winston.format.json(),
   ),
-  transports: [new winston.transports.File(
-    { filename: "app.log" }
-  )],
+  // transports: [new winston.transports.File(
+  //   { filename: "app.log" }
+  // )],
 });
 
 export const errorLogger = winston.createLogger({
@@ -27,7 +27,7 @@ export const errorLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.json(),
   ),
-  transports: [new winston.transports.Console()],
+  //transports: [new winston.transports.Console()],
 });
 
 export const monitorApiRequest = (req: Request, res: Response, next: NextFunction): void => {
