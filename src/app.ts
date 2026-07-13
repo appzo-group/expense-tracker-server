@@ -12,6 +12,8 @@ import { monitorApiRequest } from './shared/logger';
 
 const app = express();
 
+app.set("trust proxy", true);
+
 app.use(monitorApiRequest);
 app.use(helmet());
 app.use(cors({ credentials: true }));
