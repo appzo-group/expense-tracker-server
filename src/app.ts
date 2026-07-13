@@ -12,7 +12,7 @@ import { monitorApiRequest } from './shared/logger';
 
 const app = express();
 
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 app.use(monitorApiRequest);
 app.use(helmet());
@@ -22,13 +22,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sanitize);
 app.use(globalLimiter);
 
+
 app.use('/api/v1', apiRouter);
 
 app.get('/health', (_req, res) => {
   res.status(200).send('OK');
 });
 app.get('/', (_req, res) => {
-  res.status(200).send('Expense Tracker Server Running');
+  const a =  app.get("trust proxy");
+  res.status(200).send(a);
 });
 
 app.use(notFound);

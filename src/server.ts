@@ -15,6 +15,8 @@ let server: ReturnType<typeof app.listen>;
 async function main(): Promise<void> {
   try {
     await dbconnect();
+
+    
    
     server = app.listen(Number(config.port), () => {
       logger.info(`Application listening on port: ${config.port} (${config.node_env})`);
