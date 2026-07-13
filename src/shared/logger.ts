@@ -6,6 +6,7 @@ import config from '../config';
 export const logger = winston.createLogger({
   level: config.isTest ? 'silent' : 'info',
   silent: config.isTest,
+
   format: winston.format.combine(
     winston.format.timestamp(),
     config.isTest
@@ -14,7 +15,9 @@ export const logger = winston.createLogger({
       )
       : winston.format.json(),
   ),
-  transports: [new winston.transports.Console()],
+  transports: [new winston.transports.File(
+    { filename: "app.log" }
+  )],
 });
 
 export const errorLogger = winston.createLogger({
