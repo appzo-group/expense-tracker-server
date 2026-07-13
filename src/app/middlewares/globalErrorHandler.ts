@@ -48,6 +48,9 @@ const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     );
   }
 
+  logger.info(errorMessages);
+  logger.info(config.isDev ? (err instanceof Error ? err.stack : undefined) : undefined,);
+
 
 
   res.status(statusCode).json({
