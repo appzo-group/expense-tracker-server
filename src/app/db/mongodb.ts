@@ -7,7 +7,7 @@ import { errorLogger, logger } from '../../shared/logger';
 export async function dbconnect(maxAttempts = 5): Promise<void> {
 
     try {
-        mongoose.set('strictQuery', true);
+       // mongoose.set('strictQuery', true);
         await mongoose.connect(config.database_url);
         logger.info('Database connected successfully');
         return;
