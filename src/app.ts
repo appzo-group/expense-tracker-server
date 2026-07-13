@@ -8,6 +8,7 @@ import { globalLimiter } from './app/middlewares/rateLimit';
 import { sanitize } from './app/middlewares/sanitize';
 import apiRouter from './app/routes';
 import { monitorApiRequest } from './shared/logger';
+import config from './config/index'
 
 
 const app = express();
@@ -23,7 +24,7 @@ app.use(globalLimiter);
 app.use('/api/v1', apiRouter);
 
 app.get('/health', (_req, res) => {
-  res.status(200).send('OK');
+  res.status(200).send(config.database_url);
 });
 app.get('/', (_req, res) => {
   res.status(200).send('Expense Tracker Server Running');
