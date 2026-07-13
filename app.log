@@ -1,0 +1,9 @@
+{"level":"info","message":"Database connected successfully","timestamp":"2026-07-13T10:44:31.490Z"}
+{"level":"info","message":"Application listening on port: 5001 (production)","timestamp":"2026-07-13T10:44:31.494Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2026-07-13T10:44:32.092Z"}
+{"level":"info","message":"Database connected successfully","timestamp":"2026-07-13T10:44:37.967Z"}
+{"level":"info","message":"Application listening on port: 5001 (production)","timestamp":"2026-07-13T10:44:37.971Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2026-07-13T10:45:08.854Z"}
+{"level":"info","message":"Database connected successfully","timestamp":"2026-07-13T10:45:14.881Z"}
+{"level":"info","message":"Application listening on port: 5001 (production)","timestamp":"2026-07-13T10:45:14.885Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2026-07-13T10:46:40.480Z"}
