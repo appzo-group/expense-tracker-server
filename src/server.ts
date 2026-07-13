@@ -14,10 +14,14 @@ let server: ReturnType<typeof app.listen>;
 
 async function main(): Promise<void> {
   try {
-    await dbconnect();
+    const message = await dbconnect();
     server = app.listen(Number(config.port), () => {
       logger.info(`Application listening on port: ${config.port} (${config.node_env})`);
     });
+    app.get('/c', (_req, res) => {
+      res.status(200).send(message);
+    });
+
   } catch (error) {
     errorLogger.error('Failed to connect to the database');
     process.exit(1);
